@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"os"
 
 	"github.com/gmalka/rest_api"
@@ -11,20 +9,22 @@ import (
 	"github.com/gmalka/rest_api/pkg/service"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
 func main() {
-	fmt.Println("HELLO")
+	logrus.SetFormatter(&logrus.JSONFormatter{})
+
 	if err := initConfig(); err != nil {
-		log.Fatalf("Error config read: %s", err.Error())
+		logrus.Fatalf("Error config read: %s", err.Error())
 	}
 
 	if err := godotenv.Load(); err != nil {
-		log.Fatalf("Fail load env: %s", err.Error())
+		logrus.Fatalf("Fail load env: %s", err.Error())
 	}
 
-	db, err := repositoty.NewPostgresDB(repositoty.Config{
+	db, err := repository.NewPostgresDB(repository.Config{
 		Host: viper.GetString("db.host"),
 		Port: viper.GetString("db.port"),
 		Username: viper.GetString("db.username"),
@@ -34,17 +34,17 @@ func main() {
 	}) 
 
 	if err != nil {
-		log.Fatalf("Error while db connecting: %s", err.Error())	
+		logrus.Fatalf("Error while db connecting: %s", err.Error())	
 	}
 
-	repos := repositoty.NewRepository(db)
+	repos := repository.NewRepository(db)
 	service := service.NewService(repos)
 	handlers := handler.NewHandler(service)
 
 
 	srv := new(todo.Server)
 	if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
-		log.Fatalf("error accured while server rungging :%s", err)
+		logrus.Fatalf("error accured while server rungging :%s", err)
 	}
 }
  

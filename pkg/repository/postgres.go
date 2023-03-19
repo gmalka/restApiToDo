@@ -1,8 +1,16 @@
-package repositoty
+package repository
 
 import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
+)
+
+const (
+	usersTable = "users"
+	todoListTable = "todo_lists"
+	userListTable = "user_lists"
+	todoItemsTable = "todo_items"
+	listsItemTable = "lists_items"
 )
 
 type Config struct {
