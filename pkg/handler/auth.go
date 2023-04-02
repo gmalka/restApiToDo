@@ -5,11 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	todo "github.com/gmalka/rest_api"
-	"github.com/sirupsen/logrus"
 )
 
 func (h *Handler) signUp(c *gin.Context) {
-	logrus.Println("Starting create user")
 	var input todo.User
 
 	if err := c.BindJSON(&input); err != nil {
@@ -27,6 +25,25 @@ func (h *Handler) signUp(c *gin.Context) {
 	})
 }
 
-func (h *Handler) signIn(c *gin.Context) {
+type signInInput struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
 
+func (h *Handler) signIn(c *gin.Context) {
+	var input signInInput
+
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	token, err := h.service.Authorization.GenerateToken(input.Username, input.Password)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"token": token,
+	})
 }
