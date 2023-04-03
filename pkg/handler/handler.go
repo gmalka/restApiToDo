@@ -14,21 +14,16 @@ func NewHandler(service *service.Service) *Handler {
 	return &Handler{service: service}
 }
 
-func fff(c *gin.Context) {
-	logrus.Println("Hmmm")
-}
-
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
 
-	router.POST("/", fff)
 	auth := router.Group("/auth")
 	{
 		auth.POST("/sign-up", h.signUp)
 		auth.POST("/sign-in", h.signIn)
 	}
 
-	api := router.Group("/api")
+	api := router.Group("/api", h.userIdentify)
 	{
 		lists := api.Group("/lists")
 		{
