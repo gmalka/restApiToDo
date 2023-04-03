@@ -3,7 +3,6 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gmalka/rest_api/pkg/service"
-	"github.com/sirupsen/logrus"
 )
 
 type Handler struct {
